@@ -1,0 +1,8 @@
+{
+  "explorer.compactFolders": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2
+}

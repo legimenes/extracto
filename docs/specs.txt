@@ -1,0 +1,15 @@
+# ActivityType (Tipo de atividade financeira)
+Revenue
+Expenses
+
+# Activity (Atividade financeira)
+Name, ActivityTypeId
+
+# Identifier
+ActivityId, Term
+
+--------------
+# Entry (Lançamentos)
+ActivityId, Value, Historic, Month, Year
+
+Regex, Report templates
