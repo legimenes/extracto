@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { format } from "date-fns";
+import FileUpload from './components/file-upload';
 
 interface Activity {
   id: number;
@@ -29,11 +30,8 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<Statement[]>([]);
   
-  const handleFileChoice = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setFile(file);
-    }
+  const onFileChoice = (file: File | null) => {
+    setFile(file);
   };
 
   const handleFileUpload = async () => {
@@ -114,14 +112,7 @@ function App() {
       <div className="w-screen h-screen overflow-y-auto bg-slate-700 p-4">
         <h1>Extrato</h1>
         <div className="flex flex-col items-center justify-center p-6">
-          <input type="file" className="mb-2 text-sm text-slate-500
-            file:mr-4 file:py-2 file:px-4
-            file:rounded-full file:border-0
-            file:text-sm file:font-semibold
-            file:bg-slate-50 file:text-slate-700
-            hover:file:bg-slate-300"
-            onChange={handleFileChoice}
-          />
+          <FileUpload onFileChoice={onFileChoice} />
           <button
             className="px-3 py-1 bg-green-500 text-white rounded"
             onClick={handleFileUpload}
