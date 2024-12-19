@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { format } from "date-fns";
-import FileUpload from './components/file-upload';
+import StatementLoader from './components/statement-loader';
 
 interface Activity {
   id: number;
@@ -26,40 +26,10 @@ interface MonthlyActivity {
 };
 
 function App() {
-  const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
   const [data, setData] = useState<Statement[]>([]);
   
-  const onFileChoice = (file: File | null) => {
-    setFile(file);
-  };
-
-  const handleFileUpload = async () => {
-    //debugger;
-    if (!file) return;
-    const formData = new FormData();
-    formData.append("file", file);
-    try {
-      setLoading(true);
-      const response = await axios.post("http://localhost:3000/load-statement", formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      const data = response.data.map((item: Statement, index: number) => ({
-        ...item,
-        selected: true,
-        id: index
-      }));
-      setData(data);
-      setFile(null);
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      alert("Error uploading file");
-    } finally {
-      //setFile(null);
-      setLoading(false);
-    }
+  const handleFileSelect = async (statement: Statement[]) => {
+    setData(statement);
   };
 
   const toggleEntry = (id: number) => {
@@ -111,16 +81,7 @@ function App() {
     <>
       <div className="w-screen h-screen overflow-y-auto bg-slate-700 p-4">
         <h1>Extrato</h1>
-        <div className="flex flex-col items-center justify-center p-6">
-          <FileUpload onFileChoice={onFileChoice} />
-          <button
-            className="px-3 py-1 bg-green-500 text-white rounded"
-            onClick={handleFileUpload}
-            disabled={loading}
-          >
-            {loading ? "Carregando..." : "Upload"}
-          </button>
-        </div>
+        <StatementLoader onFileSelect={handleFileSelect} />
         <div className="max-w-4xl mx-auto">
           <table className="min-w-full bg-slate-300 border-collapse border border-slate-200">
             <thead>
