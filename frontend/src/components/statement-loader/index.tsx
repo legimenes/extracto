@@ -6,7 +6,7 @@ interface StatementLoaderProps {
   onFileSelect: (statement: Statement[]) => void;
 }
 
-const StatementLoader = ({ onFileSelect }: StatementLoaderProps) => {
+export default function StatementLoader({ onFileSelect }: StatementLoaderProps) {
   const [loading, setLoading] = useState(false);
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,19 +37,15 @@ const StatementLoader = ({ onFileSelect }: StatementLoaderProps) => {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center p-6">
-        <input type="file" className="mb-2 text-sm text-slate-500
-          file:mr-4 file:py-2 file:px-4
-          file:rounded-full file:border-0
-          file:text-sm file:font-semibold
-          file:bg-slate-50 file:text-slate-700
-          hover:file:bg-slate-300"
+      <div className="flex flex-col items-center justify-center pb-6">
+        <input type="file" className="text-sm text-white
+          file:mr-4 file:px-3 file:py-1 file:rounded file:border-0
+          file:text-sm file:font-semibold file:text-white
+          file:bg-lime-600 hover:file:bg-lime-700"
           onChange={handleFileChange}
-        />        
-        <span className="text-white">{loading ? "Carregando..." : ""}</span>        
+        />
+        <span className="text-white">{loading && "Carregando..."}</span>
       </div>
     </>
   );
 }
-
-export default StatementLoader;

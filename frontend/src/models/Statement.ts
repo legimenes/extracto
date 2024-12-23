@@ -1,4 +1,4 @@
-import Activity from "./activity";
+import Activity from "./Activity";
 
 export default interface Statement {
   selected: boolean,
