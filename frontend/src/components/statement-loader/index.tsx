@@ -1,19 +1,17 @@
 import axios from "axios";
-import { useState } from "react";
 import Statement from "../../models/Statement";
 
 interface StatementLoaderProps {
   onFileSelect: (statement: Statement[]) => void;
+  isLoading: (loading: boolean) => void;
 }
 
-export default function StatementLoader({ onFileSelect }: StatementLoaderProps) {
-  const [loading, setLoading] = useState(false);
-
+export default function StatementLoader({ onFileSelect, isLoading }: StatementLoaderProps) {
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       const file = event.target.files?.[0];
       if (!file) return;
-      setLoading(true);
+      isLoading(true);
       const formData = new FormData();
       formData.append("file", file);
       const response = await axios.post("http://localhost:3000/load-statement", formData, {
@@ -31,7 +29,7 @@ export default function StatementLoader({ onFileSelect }: StatementLoaderProps) 
       console.error("Error uploading file:", error);
       alert("Error uploading file");
     } finally {
-      setLoading(false);
+      isLoading(false);
     }
   };
 
@@ -44,7 +42,6 @@ export default function StatementLoader({ onFileSelect }: StatementLoaderProps) 
           file:bg-lime-600 hover:file:bg-lime-700"
           onChange={handleFileChange}
         />
-        <span className="text-white">{loading && "Carregando..."}</span>
       </div>
     </>
   );
