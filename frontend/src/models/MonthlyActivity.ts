@@ -1,4 +1,4 @@
-export default interface MonthlyActivity {
+export interface MonthlyActivity {
   activityId: number;
   activityName: string;
   statementEntry: string;

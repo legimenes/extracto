@@ -1,6 +1,6 @@
-import Activity from "./Activity";
+import { Activity } from "./Activity";
 
-export default interface Statement {
+export interface AccountStatement {
   selected: boolean,
   id: number;
   activities: Activity[];
