@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react'
 import axios from 'axios';
 import { AccountStatement, MonthlyActivity } from '../models';
-import { AccountStatementLoader, BankStatementEntry } from '../components/account-statement';
+import { BankStatementLoader, BankStatementEntry } from '../components/bank-statements';
 
-const Statement = () => {
+const BankStatements = () => {
   const [data, setData] = useState<AccountStatement[]>([]);
 
   const handleFileSelect = useCallback(async (statement: AccountStatement[]) => {
@@ -32,7 +32,6 @@ const Statement = () => {
         value: statement.value
       });
     });
-    console.log(JSON.stringify(monthlyActivities, null, 2));
     const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}reports/monthly-statement`, JSON.stringify(monthlyActivities, null, 2), {
       headers: {
         'Content-Type': 'application/json'
@@ -46,15 +45,13 @@ const Statement = () => {
     }
   };
 
-  console.log('RENDER Statement');
-
   return (
     <>
       <div className="flex h-screen">
         <div className="flex-none w-10 bg-neutral-900">01</div>
         <div className="flex-1 py-4 px-20 overflow-y-auto bg-neutral-800">
           <h1 className="border-b border-gray-200 mb-6 font-bold text-2xl">Extrato</h1>
-          <AccountStatementLoader onFileSelect={handleFileSelect} />
+          <BankStatementLoader onFileSelect={handleFileSelect} />
             <div className="mx-auto">
               <div className="overflow-auto max-h-96">
                 <table className="min-w-full bg-neutral-900 border-collapse border border-neutral-700">
@@ -86,4 +83,4 @@ const Statement = () => {
   )
 }
 
-export { Statement }
+export { BankStatements }

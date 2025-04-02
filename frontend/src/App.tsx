@@ -1,11 +1,11 @@
-import { Statement } from "./pages/Statement";
+import { BankStatements } from "./pages/BankStatements";
 
 function App() {
 
   console.log('RENDER App');
 
   return (
-    <Statement />
+    <BankStatements />
   );
 }
 

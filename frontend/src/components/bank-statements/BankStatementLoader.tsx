@@ -3,11 +3,11 @@ import axios from 'axios';
 import Loading from '../shared/Loading';
 import { AccountStatement } from '../../models';
 
-interface AccountStatementLoaderProps {
+interface BankStatementLoaderProps {
   onFileSelect: (statement: AccountStatement[]) => void;
 }
 
-const AccountStatementLoader = ({ onFileSelect }: AccountStatementLoaderProps) => {
+const BankStatementLoader = ({ onFileSelect }: BankStatementLoaderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -52,8 +52,6 @@ const AccountStatementLoader = ({ onFileSelect }: AccountStatementLoaderProps) =
     }
   }
 
-  console.log('RENDER AccountStatementLoader');
-
   return (
     <>
       <div className="flex items-center justify-center pb-6">
@@ -75,4 +73,4 @@ const AccountStatementLoader = ({ onFileSelect }: AccountStatementLoaderProps) =
   )
 }
 
-export { AccountStatementLoader }
+export { BankStatementLoader }
