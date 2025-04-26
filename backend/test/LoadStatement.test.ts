@@ -1,19 +1,19 @@
+import dotenv from 'dotenv';
 import * as path from 'path';
 import fs from 'fs';
-import dotenv from 'dotenv';
-import IStatementDao from "../src/application/IStatementDao";
-import { LoadStatement, Output as StatementOutput } from "../src/application/LoadStatement";
-import StatementDao from "../src/infrastructure/data/StatementDao";
+import { LoadBankStatementResponse } from '@shared/contracts/load-bank-statement/LoadBankStatementResponse';
+import IStatementDao from '@application/IStatementDao';
+import { LoadBankStatement } from '@application/LoadBankStatement';
+import StatementDao from '@infrastructure/data/StatementDao';
 
 let statementDao: IStatementDao;
-let readStatement: LoadStatement;
+let loadBankStatement: LoadBankStatement;
 let fileDir: string | undefined;
 
 beforeEach(() => {
   jest.setTimeout(Infinity);
   statementDao = new StatementDao();
-  readStatement = new LoadStatement(statementDao);
-
+  loadBankStatement = new LoadBankStatement(statementDao);
   dotenv.config();
   fileDir = process.env.FILES_DIR;
 });
@@ -21,7 +21,7 @@ beforeEach(() => {
 test('Deve identificar uma atividade financeira no lançamento no extrato', async () => {
   const filePath = path.join(fileDir!, "upload", "extratoSantander.ofx");
   const ofxFile: string = fs.readFileSync(filePath, 'utf8');
-  const accountStatement: StatementOutput[] = await readStatement.execute(ofxFile);
-
-  expect(accountStatement.every(p => p.activities !== undefined)).toBeTruthy();
+  const loadBankStatementResponse: LoadBankStatementResponse = await loadBankStatement.execute(ofxFile);
+  
+  expect(loadBankStatementResponse.entries.every(p => p.activities !== undefined)).toBeTruthy();
 });

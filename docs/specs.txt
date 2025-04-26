@@ -1,12 +1,12 @@
 # ActivityType (Tipo de atividade financeira)
-Revenue
-Expenses
+Revenue - Credit
+Expenses - Debit
 
 # Activity (Atividade financeira)
 Name, ActivityTypeId
 
-# Identifier
-ActivityId, Term
+# Expressions
+ActivityId, Pattern
 
 --------------
 # Entry (Lançamentos)

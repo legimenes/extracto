@@ -1,12 +1,12 @@
 import { useCallback, useState } from 'react'
 import axios from 'axios';
-import { AccountStatement, MonthlyActivity } from '../models';
-import { BankStatementLoader, BankStatementEntry } from '../components/bank-statements';
+import { BankStatementEntry, BankStatementLoader } from '@/components/bank-statements';
+import { MonthlyActivity } from '@/models/MonthlyActivity';
 
 const BankStatements = () => {
-  const [data, setData] = useState<AccountStatement[]>([]);
+  const [data, setData] = useState<BankStatementEntry[]>([]);
 
-  const handleFileSelect = useCallback(async (statement: AccountStatement[]) => {
+  const handleFileSelect = useCallback(async (statement: BankStatementEntry[]) => {
     setData(statement);
   }, []);
 
@@ -21,15 +21,15 @@ const BankStatements = () => {
   }, []);
 
   const handleExport = async () => {
-    const selectedStatements: AccountStatement[] = data.filter((statement) => statement.selected);
+    const selectedEntries: BankStatementEntry[] = data.filter((entry) => entry.selected);
     const monthlyActivities: MonthlyActivity[] = [];
-    selectedStatements.forEach(statement => {
+    selectedEntries.forEach(entry => {
       monthlyActivities.push({
-        activityId: statement.activities[0].id,
-        activityName: statement.activities[0].name,
-        statementEntry: statement.statementEntry,
-        date: statement.date,
-        value: statement.value
+        activityId: entry.activities[0].id,
+        activityName: entry.activities[0].name,
+        statementEntry: entry.memo,
+        date: entry.date,
+        value: entry.value
       });
     });
     const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}reports/monthly-statement`, JSON.stringify(monthlyActivities, null, 2), {

@@ -1,9 +1,9 @@
 import { memo } from 'react';
-import { useCurrency, useDate } from '../../hooks';
-import { AccountStatement } from '../../models';
+import { useCurrency, useDate } from '@/hooks';
+import { BankStatementEntry } from '@/models/BankStatementEntry';
 
 interface BankStatementEntryProps {
-  entry: AccountStatement,
+  entry: BankStatementEntry,
   onToggleEntry: (id: number) => void
 }
 
@@ -36,7 +36,7 @@ const BankStatementEntry = memo(({entry, onToggleEntry}: BankStatementEntryProps
             ))}
           </select>
         </td>
-        <td className="p-2">{entry.statementEntry}</td>
+        <td className="p-2">{entry.memo}</td>
         <td className="p-2">{formatDate(entry.date, "dd/MM/yyyy")}</td>
         <td className="p-2 min-w-36">{formatCurrency(entry.value)}</td>
       </tr>

@@ -1,7 +1,7 @@
-import IStatementDao from "../../application/IStatementDao";
-import Activity from "../../models/Activity";
-import Expression from "../../models/Expression";
-import { DatabaseConnection } from "./DatabaseConnection";
+import Activity from "@domain/Activity";
+import Expression from "@domain/Expression";
+import IStatementDao from "@application/IStatementDao";
+import { DatabaseConnection } from "@infrastructure/data/DatabaseConnection";
 
 export default class StatementDao implements IStatementDao {
 
@@ -11,17 +11,25 @@ export default class StatementDao implements IStatementDao {
       SELECT
         Activities.Id,
         Activities.Name,
-        ActivityTypes.Operation      
+        ActivityTypes.Operation,
+        Expressions.Pattern
       FROM Activities
-      INNER JOIN ActivityTypes ON ActivityTypes.Id = Activities.ActivityTypeId`
-      .replace(/\s+/g, " ").trim();
+      INNER JOIN ActivityTypes ON ActivityTypes.Id = Activities.ActivityTypeId
+      LEFT JOIN Expressions ON Expressions.ActivityId = Activities.Id
+      `.replace(/\s+/g, " ").trim();
     const rows = await db.all(query);
-    const activities: Activity[] = rows.map(row => ({
-      id: row.Id,
-      name: row.Name,
-      operation: row.Operation
-    }));
-    return activities;
+    const activityMap = new Map<number, Activity>();
+    rows.forEach(row => {
+      const activityId = row.Id;
+      if (!activityMap.has(activityId)) {
+        activityMap.set(activityId, new Activity(row.Id, row.Name, row.Operation));
+      }
+      const pattern = row.Pattern;
+      if (pattern) {
+        activityMap.get(activityId)!.addPattern(pattern);
+      }
+    });
+    return Array.from(activityMap.values());
   }
 
   async getExpressions(): Promise<Expression[]> {
@@ -31,8 +39,8 @@ export default class StatementDao implements IStatementDao {
         Expressions.Id,
         Expressions.ActivityId,
         Expressions.Pattern
-      FROM Expressions`
-      .replace(/\s+/g, " ").trim();
+      FROM Expressions
+      `.replace(/\s+/g, " ").trim();
     const rows = await db.all(query);
     const expressions: Expression[] = rows.map(row => ({
       id: row.Id,
@@ -41,5 +49,4 @@ export default class StatementDao implements IStatementDao {
     }));
     return expressions;
   }
-
 }

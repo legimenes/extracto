@@ -1,17 +1,17 @@
 import * as path from 'path';
 import dotenv from 'dotenv';
 import { createObjectCsvWriter } from 'csv-writer';
-import AccountStatement from "../models/AccountStatement";
+import BankStatementEntry from '@domain/BankStatementEntry';
 
 export default class MonthlyReport {
 
-  static async generate(accountStatement: AccountStatement[]) {
+  static async generate(entries: BankStatementEntry[]) {
     dotenv.config();
     const filePath = path.join(process.env.FILES_DIR!, "reports", "output.csv");
     const csvWriter = createObjectCsvWriter({
       path: filePath,
       header: [
-        { id: 'statementEntry', title: 'Lançamento' },
+        { id: 'entry', title: 'Lançamento' },
         { id: 'date', title: 'Data' },
         { id: 'value', title: 'Valor' },
         { id: 'activity', title: 'Atividade' },
@@ -19,29 +19,26 @@ export default class MonthlyReport {
       ],
       fieldDelimiter: ';'
     });
-    const monthlyReport: MonthlyReportDto[] = [];
-    accountStatement.forEach(statement => {
-      let activityName: string = "";
-      let patterns: string = "";
-      statement.activities?.forEach(activity => {
-        activityName += activity.activityName + " ";
-        patterns = activity.patterns?.join(", ");
-      });
-      monthlyReport.push({
-        statementEntry: statement.statementEntry,
-        date: statement.date,
-        value: statement.value,
-        activity: activityName.trim(),
+    const monthlyReport: MonthlyReportDto[] = entries.map(entry => {
+      const activities = entry.getActivities();
+      const activityNames = activities.map(activity => activity.name).join(", ");
+      const patterns = activities.flatMap(activity => activity.getPatterns()).join(", ");
+      return {
+        entry: entry.memo,
+        date: entry.date,
+        value: entry.value,
+        activity: activityNames,
         patterns: patterns
-      });
+      };
     });
+
     await csvWriter.writeRecords(monthlyReport);
   }
 
 }
 
 type MonthlyReportDto = {
-  statementEntry: string,
+  entry: string,
   date: Date,
   value: number,
   activity: string,

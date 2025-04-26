@@ -1,10 +1,11 @@
 import React, { useRef, useState } from 'react'
 import axios from 'axios';
 import Loading from '../shared/Loading';
-import { AccountStatement } from '../../models';
+import { LoadBankStatementResponse } from '@shared/contracts/load-bank-statement/LoadBankStatementResponse';
+import { BankStatementEntry } from '@/models/BankStatementEntry';
 
 interface BankStatementLoaderProps {
-  onFileSelect: (statement: AccountStatement[]) => void;
+  onFileSelect: (bankStatementEntries: BankStatementEntry[]) => void;
 }
 
 const BankStatementLoader = ({ onFileSelect }: BankStatementLoaderProps) => {
@@ -21,34 +22,34 @@ const BankStatementLoader = ({ onFileSelect }: BankStatementLoaderProps) => {
     if (!file) return;
     setIsLoading(true);
     setFileName(file.name);
-    const statement: AccountStatement[] = await uploadAccountStatementFile(file);
-    onFileSelect(statement);
+    const entries: BankStatementEntry[] = await uploadAccountStatementFile(file);
+    onFileSelect(entries);
     setIsLoading(false);
     // setTimeout(() => {
     //   setIsLoading(false);
     // }, 2000);
   };
 
-  const uploadAccountStatementFile = async (file: File): Promise<AccountStatement[]> => {
+  const uploadAccountStatementFile = async (file: File): Promise<BankStatementEntry[]> => {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const endpointUrl = `${import.meta.env.VITE_API_BASE_URL}load-statement`;
-      const response = await axios.post(endpointUrl, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      const statement: AccountStatement[] = response.data.map((item: AccountStatement, index: number) => ({
-        ...item,
+      const url = `${import.meta.env.VITE_API_BASE_URL}load-bank-statement`;
+      const response = await axios.post<LoadBankStatementResponse>(url, formData);
+      console.log(response.data.entries);
+      return response.data.entries.map(entry => ({
         selected: true,
-        id: index
+        id: entry.id,
+        activities: entry.activities,
+        memo: entry.memo,
+        date: entry.date,
+        value: entry.value
       }));
-      return statement;
     } catch (error) {
       console.error("Error uploading file:", error);
       alert("Error uploading file");
-      return [];
+      throw new Error('Failed to upload bank statement file');
+      //return [];
     }
   }
 

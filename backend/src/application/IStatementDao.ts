@@ -1,5 +1,5 @@
-import Activity from "../models/Activity";
-import Expression from "../models/Expression";
+import Activity from "@domain/Activity";
+import Expression from "@domain/Expression";
 
 export default interface IStatementDao {
   getActivities(): Promise<Activity[]>;
