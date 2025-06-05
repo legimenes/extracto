@@ -26,7 +26,8 @@
     "paths": {
       "@/*": ["src/*"],
       "@components/*": ["src/components/*"],
-      "@utils/*": ["src/utils/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@gateways/*": ["src/gateways/*"],
       "@pages/*": ["src/pages/*"],
       "@shared/*": ["../shared/*"]
     }

@@ -1,27 +1,39 @@
 import { useCallback, useState } from 'react'
 import axios from 'axios';
 import { BankStatementEntry, BankStatementLoader } from '@/components/bank-statements';
+import { ActivityResponse } from '@shared/contracts/activities/ActivityResponse';
 import { MonthlyActivity } from '@/models/MonthlyActivity';
 
 const BankStatements = () => {
   const [data, setData] = useState<BankStatementEntry[]>([]);
+  const [activities, setActivities] = useState<ActivityResponse[]>([]);
 
-  const handleFileSelect = useCallback(async (statement: BankStatementEntry[]) => {
-    setData(statement);
-  }, []);
+  const handleFileSelect = (bankStatementEntries: BankStatementEntry[], loadedActivities: ActivityResponse[]) => {
+    setData(bankStatementEntries);
+    setActivities(loadedActivities);
+  };
 
   const handleToggleEntry = useCallback((id: number) => {
     setData((prevData) =>
-      prevData.map((statement) =>
-        statement.id === id
-          ? { ...statement, selected: !statement.selected }
-          : statement
+      prevData.map((entry) =>
+        entry.id === id
+          ? { ...entry, selected: !entry.selected }
+          : entry
       )
     );
   }, []);
 
+  // testando este metodo
+  const handleActivityChange = (id: number, activityId: number) => {
+    setData(data.map(entry =>
+      entry.id === id ? { ...entry, activities: [{ id: activityId, name: activities.find(a => a.id === activityId)?.name || '' }]} : entry
+    ));
+  };
+
   const handleExport = async () => {
     const selectedEntries: BankStatementEntry[] = data.filter((entry) => entry.selected);
+    console.log(selectedEntries);
+    return;
     const monthlyActivities: MonthlyActivity[] = [];
     selectedEntries.forEach(entry => {
       monthlyActivities.push({
@@ -66,7 +78,12 @@ const BankStatements = () => {
                   </thead>
                   <tbody>
                     {data.map((item) => (
-                      <BankStatementEntry key={item.id} entry={item} onToggleEntry={handleToggleEntry} />
+                      <BankStatementEntry
+                        key={item.id}
+                        entry={item}
+                        activities={activities}
+                        onToggleEntry={handleToggleEntry}
+                        onActivityChange={handleActivityChange} />
                     ))}                    
                   </tbody>
                 </table>

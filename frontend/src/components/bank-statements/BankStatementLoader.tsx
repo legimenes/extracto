@@ -1,17 +1,20 @@
 import React, { useRef, useState } from 'react'
 import axios from 'axios';
 import Loading from '../shared/Loading';
+import useActivities from '@hooks/useActivities';
+import { ActivityResponse } from '@shared/contracts/activities/ActivityResponse';
 import { LoadBankStatementResponse } from '@shared/contracts/load-bank-statement/LoadBankStatementResponse';
 import { BankStatementEntry } from '@/models/BankStatementEntry';
 
 interface BankStatementLoaderProps {
-  onFileSelect: (bankStatementEntries: BankStatementEntry[]) => void;
+  onFileSelect: (bankStatementEntries: BankStatementEntry[], activities: ActivityResponse[]) => void;
 }
 
 const BankStatementLoader = ({ onFileSelect }: BankStatementLoaderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { getActivities, loading: activitiesLoading } = useActivities();
 
   const handleClick = () => {
     fileInputRef.current?.click();
@@ -22,22 +25,22 @@ const BankStatementLoader = ({ onFileSelect }: BankStatementLoaderProps) => {
     if (!file) return;
     setIsLoading(true);
     setFileName(file.name);
-    const entries: BankStatementEntry[] = await uploadAccountStatementFile(file);
-    onFileSelect(entries);
+    const { entries, activities } = await uploadAccountStatementFile(file);
+    onFileSelect(entries, activities);
     setIsLoading(false);
     // setTimeout(() => {
     //   setIsLoading(false);
     // }, 2000);
   };
 
-  const uploadAccountStatementFile = async (file: File): Promise<BankStatementEntry[]> => {
+  const uploadAccountStatementFile = async (file: File): Promise<{ entries: BankStatementEntry[]; activities: ActivityResponse[] }> => {
     try {
+      const activities = await getActivities();
       const formData = new FormData();
       formData.append("file", file);
       const url = `${import.meta.env.VITE_API_BASE_URL}load-bank-statement`;
       const response = await axios.post<LoadBankStatementResponse>(url, formData);
-      console.log(response.data.entries);
-      return response.data.entries.map(entry => ({
+      const entries = response.data.entries.map(entry => ({
         selected: true,
         id: entry.id,
         activities: entry.activities,
@@ -45,6 +48,7 @@ const BankStatementLoader = ({ onFileSelect }: BankStatementLoaderProps) => {
         date: entry.date,
         value: entry.value
       }));
+      return { entries, activities };
     } catch (error) {
       console.error("Error uploading file:", error);
       alert("Error uploading file");
@@ -69,7 +73,7 @@ const BankStatementLoader = ({ onFileSelect }: BankStatementLoaderProps) => {
         </button>
         {fileName && <span>{fileName}</span>}
       </div>
-      <Loading isLoading={isLoading} />
+      <Loading isLoading={isLoading || activitiesLoading} />
     </>
   )
 }

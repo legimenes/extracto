@@ -1,15 +1,22 @@
 import { memo } from 'react';
 import { useCurrency, useDate } from '@/hooks';
+import { ActivityResponse } from '@shared/contracts/activities/ActivityResponse';
 import { BankStatementEntry } from '@/models/BankStatementEntry';
 
 interface BankStatementEntryProps {
-  entry: BankStatementEntry,
-  onToggleEntry: (id: number) => void
+  entry: BankStatementEntry;
+  activities: ActivityResponse[];
+  onToggleEntry: (id: number) => void;
+  onActivityChange: (id: number, activityId: number) => void;
 }
 
-const BankStatementEntry = memo(({entry, onToggleEntry}: BankStatementEntryProps) => {
+const BankStatementEntry = memo(({entry, activities, onToggleEntry: onToggleEntry, onActivityChange: onActivityChange}: BankStatementEntryProps) => {
   const { formatCurrency } = useCurrency();
   const { formatDate } = useDate();
+
+  const activitiesByOperation = activities?.filter(activity =>
+    entry.value < 0 ? activity.operation === 'D' : activity.operation === 'C'
+  );
 
   return (
     <>
@@ -25,12 +32,12 @@ const BankStatementEntry = memo(({entry, onToggleEntry}: BankStatementEntryProps
         </td>
         <td className="p-2">
           <select
-            id={`activity${entry.id}`}
+            id={`activityEntry${entry.id}`}
             className="border border-neutral-400 rounded text-white bg-neutral-800 cursor-pointer"
-            defaultValue={entry.id}
-            >
-            {entry.activities.map((activity, index) => (
-              <option key={index} value={activity.id}>
+            defaultValue={entry.activities[0].id}
+            onChange={e => onActivityChange(entry.id, Number(e.target.value))}>
+            {activitiesByOperation.map(activity => (
+              <option key={activity.id} value={activity.id}>
                 {activity.name}
               </option>
             ))}
