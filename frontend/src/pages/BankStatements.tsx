@@ -2,13 +2,13 @@ import { useCallback, useState } from 'react'
 import axios from 'axios';
 import { BankStatementEntry, BankStatementLoader } from '@/components/bank-statements';
 import { ActivityResponse } from '@shared/contracts/activities/ActivityResponse';
-import { MonthlyActivity } from '@/models/MonthlyActivity';
+import { Entry, MonthlyActivity } from '@/models';
 
 const BankStatements = () => {
-  const [data, setData] = useState<BankStatementEntry[]>([]);
+  const [data, setData] = useState<Entry[]>([]);
   const [activities, setActivities] = useState<ActivityResponse[]>([]);
 
-  const handleFileSelect = (bankStatementEntries: BankStatementEntry[], loadedActivities: ActivityResponse[]) => {
+  const handleFileSelect = (bankStatementEntries: Entry[], loadedActivities: ActivityResponse[]) => {
     setData(bankStatementEntries);
     setActivities(loadedActivities);
   };
@@ -23,7 +23,6 @@ const BankStatements = () => {
     );
   }, []);
 
-  // testando este metodo
   const handleActivityChange = (id: number, activityId: number) => {
     setData(data.map(entry =>
       entry.id === id ? { ...entry, activities: [{ id: activityId, name: activities.find(a => a.id === activityId)?.name || '' }]} : entry
@@ -31,7 +30,7 @@ const BankStatements = () => {
   };
 
   const handleExport = async () => {
-    const selectedEntries: BankStatementEntry[] = data.filter((entry) => entry.selected);
+    const selectedEntries: Entry[] = data.filter((entry) => entry.selected);
     console.log(selectedEntries);
     return;
     const monthlyActivities: MonthlyActivity[] = [];

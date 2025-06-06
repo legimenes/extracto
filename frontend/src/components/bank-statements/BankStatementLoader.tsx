@@ -4,10 +4,10 @@ import Loading from '../shared/Loading';
 import useActivities from '@hooks/useActivities';
 import { ActivityResponse } from '@shared/contracts/activities/ActivityResponse';
 import { LoadBankStatementResponse } from '@shared/contracts/load-bank-statement/LoadBankStatementResponse';
-import { BankStatementEntry } from '@/models/BankStatementEntry';
+import { Entry } from '@/models/Entry';
 
 interface BankStatementLoaderProps {
-  onFileSelect: (bankStatementEntries: BankStatementEntry[], activities: ActivityResponse[]) => void;
+  onFileSelect: (bankStatementEntries: Entry[], activities: ActivityResponse[]) => void;
 }
 
 const BankStatementLoader = ({ onFileSelect }: BankStatementLoaderProps) => {
@@ -33,7 +33,7 @@ const BankStatementLoader = ({ onFileSelect }: BankStatementLoaderProps) => {
     // }, 2000);
   };
 
-  const uploadAccountStatementFile = async (file: File): Promise<{ entries: BankStatementEntry[]; activities: ActivityResponse[] }> => {
+  const uploadAccountStatementFile = async (file: File): Promise<{ entries: Entry[]; activities: ActivityResponse[] }> => {
     try {
       const activities = await getActivities();
       const formData = new FormData();

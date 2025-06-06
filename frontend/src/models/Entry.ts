@@ -1,6 +1,6 @@
 import { Activity } from "./Activity";
 
-export interface BankStatementEntry {
+export interface Entry {
   selected: boolean,
   id: number;
   activities: Activity[];

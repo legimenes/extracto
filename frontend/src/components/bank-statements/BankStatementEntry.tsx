@@ -1,10 +1,10 @@
 import { memo } from 'react';
 import { useCurrency, useDate } from '@/hooks';
 import { ActivityResponse } from '@shared/contracts/activities/ActivityResponse';
-import { BankStatementEntry } from '@/models/BankStatementEntry';
+import { Entry } from '@/models/Entry';
 
 interface BankStatementEntryProps {
-  entry: BankStatementEntry;
+  entry: Entry;
   activities: ActivityResponse[];
   onToggleEntry: (id: number) => void;
   onActivityChange: (id: number, activityId: number) => void;
