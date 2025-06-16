@@ -65,6 +65,11 @@ npm install ofx-data-extractor
 npm install csv-writer
 ```
 
+### date fns
+```
+npm install date-fns
+```
+
 ### Multer
 ```
 npm install multer

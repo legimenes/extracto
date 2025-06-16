@@ -5,7 +5,6 @@ import Activity from '@domain/Activity';
 import BankStatement from '@domain/BankStatement';
 import BankStatementEntry from '@domain/BankStatementEntry';
 import IStatementDao from '@application/IStatementDao';
-import MonthlyReport from '@application/MonthlyReport';
 
 class LoadBankStatement {
 
@@ -18,7 +17,6 @@ class LoadBankStatement {
     const bankTransferList: STRTTRN[] = ofx.getBankTransferList();
     const bankStatementEntries: BankStatementEntry[] = this.mapToBankStatementEntries(bankTransferList);
     const bankStatement: BankStatement = await this.createBankStatement(bankStatementEntries);
-    await MonthlyReport.generate(bankStatement.entries);
     const response: LoadBankStatementResponse = this.assignResponse(bankStatement);
     return response;
   }

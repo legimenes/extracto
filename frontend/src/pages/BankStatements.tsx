@@ -1,12 +1,14 @@
 import { useCallback, useState } from 'react'
-import axios from 'axios';
+import useReports from '@/hooks/useReports';
 import { BankStatementEntry, BankStatementLoader } from '@/components/bank-statements';
 import { ActivityResponse } from '@shared/contracts/activities/ActivityResponse';
-import { Entry, MonthlyActivity } from '@/models';
+import { MonthlyBankStatementRequest } from '@shared/contracts/monthly-bank-statement-report/MonthlyBankStatementRequest';
+import { Entry } from '@/models';
 
 const BankStatements = () => {
   const [data, setData] = useState<Entry[]>([]);
   const [activities, setActivities] = useState<ActivityResponse[]>([]);
+  const { generateMonthlyBankStatement } = useReports();
 
   const handleFileSelect = (bankStatementEntries: Entry[], loadedActivities: ActivityResponse[]) => {
     setData(bankStatementEntries);
@@ -31,11 +33,9 @@ const BankStatements = () => {
 
   const handleExport = async () => {
     const selectedEntries: Entry[] = data.filter((entry) => entry.selected);
-    console.log(selectedEntries);
-    return;
-    const monthlyActivities: MonthlyActivity[] = [];
+    const monthlyBankStatement: MonthlyBankStatementRequest[] = [];
     selectedEntries.forEach(entry => {
-      monthlyActivities.push({
+      monthlyBankStatement.push({
         activityId: entry.activities[0].id,
         activityName: entry.activities[0].name,
         statementEntry: entry.memo,
@@ -43,17 +43,8 @@ const BankStatements = () => {
         value: entry.value
       });
     });
-    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}reports/monthly-statement`, JSON.stringify(monthlyActivities, null, 2), {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    });
-    if (response.status === 200) {
-      alert("Successfully exported");
-    }
-    else {
-      alert("Error exporting");
-    }
+    await generateMonthlyBankStatement(monthlyBankStatement);
+    alert('Reports generated successfully');
   };
 
   return (

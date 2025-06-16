@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { useCurrency, useDate } from '@/hooks';
 import { ActivityResponse } from '@shared/contracts/activities/ActivityResponse';
-import { Entry } from '@/models/Entry';
+import { Entry } from '@/models';
 
 interface BankStatementEntryProps {
   entry: Entry;

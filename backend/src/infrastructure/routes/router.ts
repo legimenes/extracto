@@ -2,15 +2,16 @@ import { Router, Request, Response } from 'express';
 import memoryUpload from '@infrastructure/middlewares/memoryUpload';
 import StatementDao from '@infrastructure/data/StatementDao';
 import { ActivityResponse, LoadBankStatementResponse } from '@shared/contracts/load-bank-statement/LoadBankStatementResponse';
-import { GenerateMonthlyStatementReport, Input as MonthlyStatementReportInput } from '@application/GenerateMonthlyStatementReport';
 import { LoadBankStatement } from '@application/LoadBankStatement';
 import { GetActivities } from '@application/GetActivities';
+import GenerateMonthlyBankStatementReport from '@application/GenerateMonthlyBankStatementReport';
+import { MonthlyBankStatementRequest } from '@shared/contracts/monthly-bank-statement-report/MonthlyBankStatementRequest';
 
 const router = Router();
 const statementDao: StatementDao = new StatementDao();
 const getActivities: GetActivities = new GetActivities(statementDao);
 const loadBankStatement: LoadBankStatement = new LoadBankStatement(statementDao);
-const generateMonthlyStatementReport: GenerateMonthlyStatementReport = new GenerateMonthlyStatementReport();
+const generateMonthlyBankStatementReport: GenerateMonthlyBankStatementReport = new GenerateMonthlyBankStatementReport();
 
 router.get('/activities', async (req: Request, res: Response) => {
   const activitiesResponse: ActivityResponse[] = await getActivities.execute();
@@ -23,9 +24,9 @@ router.post('/load-bank-statement', memoryUpload, async (req: Request, res: Resp
   res.send(loadBankStatementResponse);
 });
 
-router.post('/reports/monthly-statement', async (req: Request, res: Response) => {
-  const input: MonthlyStatementReportInput[] = req.body;
-  await generateMonthlyStatementReport.execute(input);
+router.post('/reports/monthly-bank-statement', async (req: Request, res: Response) => {
+  const input: MonthlyBankStatementRequest[] = req.body;
+  await generateMonthlyBankStatementReport.execute(input);
   res.send();
 });
 

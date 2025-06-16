@@ -5,13 +5,14 @@ export interface IActivityGateway {
 	getActivities (): Promise<ActivityResponse[]>;
 }
 
-const BASE_URL = `${import.meta.env.VITE_API_BASE_URL}activities`;
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ActivityGateway: IActivityGateway = {
 
   getActivities: async (): Promise<ActivityResponse[]> => {
     try {
-      const response = await axios.get<ActivityResponse[]>(BASE_URL);
+      const url = `${BASE_URL}activities`;
+      const response = await axios.get<ActivityResponse[]>(url);
       return response.data;
     } catch (error) {
       console.error('Error fetching activities:', error);
