@@ -25,6 +25,16 @@ const BankStatements = () => {
     );
   }, []);
 
+  const handleToggleAllEntries = useCallback(() => {
+    setData((prevData) => {
+      const allSelected = prevData.every((entry) => entry.selected);
+      return prevData.map((entry) => ({
+        ...entry,
+        selected: !allSelected,
+      }));
+    });
+  }, []);
+
   const handleActivityChange = (id: number, activityId: number) => {
     setData(data.map(entry =>
       entry.id === id ? { ...entry, activities: [{ id: activityId, name: activities.find(a => a.id === activityId)?.name || '' }]} : entry
@@ -47,6 +57,9 @@ const BankStatements = () => {
     alert('Reports generated successfully');
   };
 
+  const selectedEntries = data.filter((entry) => entry.selected).length;
+  const totalEntries = data.length;
+
   return (
     <>
       <div className="flex h-screen">
@@ -59,7 +72,14 @@ const BankStatements = () => {
                 <table className="min-w-full bg-neutral-900 border-collapse border border-neutral-700">
                   <thead className="sticky top-0">
                     <tr className="bg-neutral-900 text-neutral-400">
-                      <th className="pl-2 text-start cursor-pointer"></th>
+                      <th className="pl-2 text-start cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="accent-lime-600 cursor-pointer"
+                          checked={data.length > 0 && data.every((entry) => entry.selected)}
+                          onChange={handleToggleAllEntries}
+                        />
+                      </th>
                       <th className="pl-2 text-start cursor-pointer">Atividade</th>
                       <th className="pl-2 text-start cursor-pointer">Lançamento</th>
                       <th className="pl-2 text-start cursor-pointer">Data</th>
@@ -78,11 +98,17 @@ const BankStatements = () => {
                   </tbody>
                 </table>
               </div>
-              <button
-                className="mt-3 px-3 py-1 rounded text-white font-semibold bg-lime-600 hover:bg-lime-700"
-                onClick={handleExport}>
-                Exportar
-              </button>
+              <div className="flex justify-between items-center mt-3">
+                <button
+                  className={`mt-3 px-3 py-1 rounded text-white font-semibold bg-lime-600 hover:bg-lime-700 ${selectedEntries === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={selectedEntries === 0}
+                  onClick={handleExport}>
+                  Exportar
+                </button>
+                <div className="mt-3 text-neutral-300">
+                  {selectedEntries} / {totalEntries}
+                </div>
+              </div>
             </div>
         </div>
       </div>

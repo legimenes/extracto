@@ -1,14 +1,10 @@
 # extracto app
 
 ## TO-DOs
-Frontend: Optimizing toggle statement (checkbox click visibility)  
 Frontend: Extract export button to a component  
-Frontend: Allow export button visibility only when data has records  
-Frontend: Fill all selects with activities by activity type  
 Frontend: Create pages  
 Frontend: Create menu sidebar  
 Frontend: Back <StrictMode>  
-Backend: Create endpoint to get activity types  
 
 ## Backend setup
 
