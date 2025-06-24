@@ -118,6 +118,12 @@ npm install -D tailwindcss
 npx tailwindcss init
 ```
 
+### React Router
+```
+npm install react-router-dom
+npm install -D @types/react-router-dom
+```
+
 ### Axios
 ```
 npm install axios
