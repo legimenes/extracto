@@ -1,21 +1,31 @@
 import { Router, Request, Response } from 'express';
 import memoryUpload from '@infrastructure/middlewares/memoryUpload';
 import StatementDao from '@infrastructure/data/StatementDao';
-import { ActivityResponse, LoadBankStatementResponse } from '@shared/contracts/load-bank-statement/LoadBankStatementResponse';
+import { LoadBankStatementResponse } from '@shared/contracts/load-bank-statement/LoadBankStatementResponse';
+import { ActivityResponse as ActivitiesItem } from '@shared/contracts/activities/ActivityResponse';
+import { ActivityResponse } from '@shared/contracts/activity/ActivityResponse';
 import { LoadBankStatement } from '@application/LoadBankStatement';
 import { GetActivities } from '@application/GetActivities';
+import { GetActivity } from '@application/GetActivity';
 import GenerateMonthlyBankStatementReport from '@application/GenerateMonthlyBankStatementReport';
 import { MonthlyBankStatementRequest } from '@shared/contracts/monthly-bank-statement-report/MonthlyBankStatementRequest';
 
 const router = Router();
 const statementDao: StatementDao = new StatementDao();
 const getActivities: GetActivities = new GetActivities(statementDao);
+const getActivity: GetActivity = new GetActivity(statementDao);
 const loadBankStatement: LoadBankStatement = new LoadBankStatement(statementDao);
 const generateMonthlyBankStatementReport: GenerateMonthlyBankStatementReport = new GenerateMonthlyBankStatementReport();
 
 router.get('/activities', async (req: Request, res: Response) => {
-  const activitiesResponse: ActivityResponse[] = await getActivities.execute();
+  const activitiesResponse: ActivitiesItem[] = await getActivities.execute();
   res.send(activitiesResponse);
+});
+
+router.get('/activity/:id', async (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  const activityResponse: ActivityResponse | undefined = await getActivity.execute(id);
+  res.send(activityResponse);
 });
 
 router.post('/load-bank-statement', memoryUpload, async (req: Request, res: Response) => {

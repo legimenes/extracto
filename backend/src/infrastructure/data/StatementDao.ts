@@ -32,6 +32,36 @@ export default class StatementDao implements IStatementDao {
     return Array.from(activityMap.values());
   }
 
+  async getActivity(id: number): Promise<Activity | undefined> {
+    const db = (await DatabaseConnection.getInstance()).getDb();
+    const query = `
+      SELECT
+        Activities.Id,
+        Activities.Name,
+        ActivityTypes.Operation,
+        Expressions.Pattern
+      FROM Activities
+      INNER JOIN ActivityTypes ON ActivityTypes.Id = Activities.ActivityTypeId
+      LEFT JOIN Expressions ON Expressions.ActivityId = Activities.Id
+      WHERE Activities.Id = $1
+      `.replace(/\s+/g, " ").trim();
+    const parameters = [
+      id
+    ];
+    const rows = await db.all(query, parameters);
+    if (rows.length === 0) {
+      return undefined;
+    }
+    const { Id, Name, Operation } = rows[0];
+    const activity = new Activity(Id, Name, Operation);
+    for (const row of rows) {
+      if (row.Pattern) {
+        activity.addPattern(row.Pattern);
+      }
+    }
+    return activity;
+  }
+
   async getExpressions(): Promise<Expression[]> {
     const db = (await DatabaseConnection.getInstance()).getDb();
     const query = `
