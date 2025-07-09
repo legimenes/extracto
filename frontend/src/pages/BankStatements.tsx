@@ -66,9 +66,9 @@ const BankStatements = () => {
       <BankStatementLoader onFileSelect={handleFileSelect} />
       <div className="mx-auto">
         <div className="overflow-auto max-h-96">
-          <table className="min-w-full bg-neutral-900 border-collapse border border-neutral-700">
+          <table className="min-w-full bg-neutral-900 border-collapse border border-neutral-700 select-none">
             <thead className="sticky top-0">
-              <tr className="bg-neutral-900 text-neutral-400">
+              <tr className="bg-neutral-100 text-neutral-900">
                 <th className="pl-2 text-start cursor-pointer">
                   <input
                     type="checkbox"

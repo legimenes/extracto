@@ -14,7 +14,7 @@ const BankStatementLoader = ({ onFileSelect }: BankStatementLoaderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { getActivities, loading: activitiesLoading } = useActivities();
+  const { getActivities, isActivitiesLoading } = useActivities();
 
   const handleClick = () => {
     fileInputRef.current?.click();
@@ -73,7 +73,7 @@ const BankStatementLoader = ({ onFileSelect }: BankStatementLoaderProps) => {
         </button>
         {fileName && <span>{fileName}</span>}
       </div>
-      <Loading isLoading={isLoading || activitiesLoading} />
+      <Loading isLoading={isLoading || isActivitiesLoading} />
     </>
   )
 }

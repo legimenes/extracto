@@ -5,35 +5,35 @@ import { ActivityResponse } from '@shared/contracts/activity/ActivityResponse';
 
 const useActivities = () => {
   const [activities, setActivities] = useState<ActivityItemResponse[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isActivitiesLoading, setIsActivitiesLoading] = useState(false);
+  const [activitiesError, setActivitiesError] = useState<string | null>(null);
 
   const getActivities = async (): Promise<ActivityItemResponse[]> => {
-    setLoading(true);
+    setIsActivitiesLoading(true);
     try {
       const data: ActivityItemResponse[] = await ActivityGateway.getActivities();
       setActivities(data);
       return data;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to load activities';
-      setError(message);
+      setActivitiesError(message);
       throw error;
     } finally {
-      setLoading(false);
+      setIsActivitiesLoading(false);
     }
   };
 
   const getActivity = async (id: number): Promise<ActivityResponse | undefined> => {
-    setLoading(true);
+    setIsActivitiesLoading(true);
     try {
       const data: ActivityResponse | undefined = await ActivityGateway.getActivity(id);
       return data;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to load activity';
-      setError(message);
+      setActivitiesError(message);
       throw error;
     } finally {
-      setLoading(false);
+      setIsActivitiesLoading(false);
     }
   };
 
@@ -41,8 +41,8 @@ const useActivities = () => {
     activities,
     getActivities,
     getActivity,
-    loading,
-    error
+    isActivitiesLoading,
+    activitiesError
   };
 };
 
