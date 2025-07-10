@@ -17,6 +17,4 @@ class GetActivities {
   }
 }
 
-export { 
-  GetActivities
-};
+export { GetActivities };
