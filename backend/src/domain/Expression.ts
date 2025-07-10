@@ -5,4 +5,10 @@ export default class Expression {
     readonly pattern: string
   ) {
   }
+  
+  static create(
+    activityId: number,
+    pattern: string) {
+    return new Expression(0, activityId, pattern);
+  }
 }

@@ -62,6 +62,57 @@ export default class StatementDao implements IStatementDao {
     return activity;
   }
 
+  async insertActivity(activity: Activity): Promise<void> {
+    const db = (await DatabaseConnection.getInstance()).getDb();
+    const query = `
+      INSERT INTO Activities (
+        Name,
+        Operation
+      ) VALUES (
+        $1,
+        $2
+      )
+      `.replace(/\s+/g, " ").trim();
+    const parameters = [
+      activity.name,
+      activity.operation
+    ];
+    await db.run(query, parameters);
+  }
+
+  async updateActivity(activity: Activity): Promise<void> {
+    const db = (await DatabaseConnection.getInstance()).getDb();
+    const query = `
+      UPDATE Activities SET
+        Name = $1,
+        Operation =  $2
+      WHERE Id = $3
+      `.replace(/\s+/g, " ").trim();
+    const parameters = [
+      activity.name,
+      activity.operation,
+      activity.id
+    ];
+    await db.run(query, parameters);
+  }
+
+  async deleteActivity(id: number): Promise<void> {
+    const db = (await DatabaseConnection.getInstance()).getDb();
+    const parameters = [
+      id
+    ];
+    const expressionQuery = `
+      DELETE FROM Expressions
+      WHERE ActivityId = $1
+      `.replace(/\s+/g, " ").trim();
+    await db.run(expressionQuery, parameters);    
+    const activityQuery = `
+      DELETE FROM Activities
+      WHERE Id = $1
+      `.replace(/\s+/g, " ").trim();
+    await db.run(activityQuery, parameters);
+  }
+
   async getExpressions(): Promise<Expression[]> {
     const db = (await DatabaseConnection.getInstance()).getDb();
     const query = `
@@ -78,5 +129,35 @@ export default class StatementDao implements IStatementDao {
       pattern: row.Pattern
     }));
     return expressions;
+  }
+
+  async insertExpression(expression: Expression): Promise<void> {
+    const db = (await DatabaseConnection.getInstance()).getDb();
+    const query = `
+      INSERT INTO Expressions (
+        ActivityId,
+        Pattern
+      ) VALUES (
+        $1,
+        $2
+      )
+      `.replace(/\s+/g, " ").trim();
+    const parameters = [
+      expression.activityId,
+      expression.pattern
+    ];
+    await db.run(query, parameters);
+  }
+
+  async deleteExpression(expressionId: number): Promise<void> {
+    const db = (await DatabaseConnection.getInstance()).getDb();
+    const query = `
+      DELETE FROM Expressions
+      WHERE Id = $1
+      `.replace(/\s+/g, " ").trim();
+    const parameters = [
+      expressionId
+    ];
+    await db.run(query, parameters);
   }
 }
