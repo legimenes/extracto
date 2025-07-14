@@ -64,33 +64,35 @@ export default class StatementDao implements IStatementDao {
 
   async insertActivity(activity: Activity): Promise<void> {
     const db = (await DatabaseConnection.getInstance()).getDb();
+    const activityTypeId = await this.getActivityTypeId(activity.operation);
     const query = `
       INSERT INTO Activities (
-        Name,
-        Operation
+        ActivityTypeId,
+        Name
       ) VALUES (
         $1,
         $2
       )
       `.replace(/\s+/g, " ").trim();
     const parameters = [
-      activity.name,
-      activity.operation
+      activityTypeId,
+      activity.name
     ];
     await db.run(query, parameters);
   }
 
   async updateActivity(activity: Activity): Promise<void> {
     const db = (await DatabaseConnection.getInstance()).getDb();
+    const activityTypeId = await this.getActivityTypeId(activity.operation);
     const query = `
       UPDATE Activities SET
-        Name = $1,
-        Operation =  $2
+        ActivityTypeId = $1,
+        Name =  $2
       WHERE Id = $3
       `.replace(/\s+/g, " ").trim();
     const parameters = [
+      activityTypeId,
       activity.name,
-      activity.operation,
       activity.id
     ];
     await db.run(query, parameters);
@@ -159,5 +161,21 @@ export default class StatementDao implements IStatementDao {
       expressionId
     ];
     await db.run(query, parameters);
+  }
+
+  async getActivityTypeId(operation: string): Promise<number> {
+    const db = (await DatabaseConnection.getInstance()).getDb();
+    const query = `
+      SELECT
+        ActivityTypes.Id
+      FROM ActivityTypes
+      WHERE ActivityTypes.Operation = $1
+      `.replace(/\s+/g, " ").trim();
+    const parameters = [
+      operation
+    ];
+    const row = await db.get(query, parameters);
+    const { Id } = row;
+    return Id;
   }
 }

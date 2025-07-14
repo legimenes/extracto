@@ -1,4 +1,4 @@
-import { InsertExpressionRequest } from "@shared/contracts/insertExpression/InsertExpressionRequest";
+import { InsertExpressionRequest } from "@shared/contracts/insert-expression/InsertExpressionRequest";
 import Expression from "@domain/Expression";
 import IStatementDao from "./IStatementDao";
 

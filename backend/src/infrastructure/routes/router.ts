@@ -7,16 +7,19 @@ import { ActivityResponse } from '@shared/contracts/activity/ActivityResponse';
 import { LoadBankStatement } from '@application/LoadBankStatement';
 import { GetActivities } from '@application/GetActivities';
 import { GetActivity } from '@application/GetActivity';
+import { InsertActivity } from '@application/InsertActivity';
 import { InsertExpression } from '@application/InsertExpression';
 import { DeleteExpression } from '@application/DeleteExpression';
 import GenerateMonthlyBankStatementReport from '@application/GenerateMonthlyBankStatementReport';
+import { InsertActivityRequest } from '@shared/contracts/insert-activity/InsertActivityRequest';
 import { MonthlyBankStatementRequest } from '@shared/contracts/monthly-bank-statement-report/MonthlyBankStatementRequest';
-import { InsertExpressionRequest } from '@shared/contracts/insertExpression/InsertExpressionRequest';
+import { InsertExpressionRequest } from '@shared/contracts/insert-expression/InsertExpressionRequest';
 
 const router = Router();
 const statementDao: StatementDao = new StatementDao();
 const getActivities: GetActivities = new GetActivities(statementDao);
 const getActivity: GetActivity = new GetActivity(statementDao);
+const insertActivity: InsertActivity = new InsertActivity(statementDao);
 const insertExpression: InsertExpression = new InsertExpression(statementDao);
 const deleteExpression: DeleteExpression = new DeleteExpression(statementDao);
 const loadBankStatement: LoadBankStatement = new LoadBankStatement(statementDao);
@@ -31,6 +34,12 @@ router.get('/activity/:id', async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   const activityResponse: ActivityResponse | undefined = await getActivity.execute(id);
   res.send(activityResponse);
+});
+
+router.post('/activity', async (req: Request, res: Response) => {
+  const input: InsertActivityRequest = req.body;
+  await insertActivity.execute(input);
+  res.send();
 });
 
 router.post('/expression', async (req: Request, res: Response) => {
