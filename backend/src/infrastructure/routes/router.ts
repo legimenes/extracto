@@ -9,6 +9,7 @@ import { GetActivities } from '@application/GetActivities';
 import { GetActivity } from '@application/GetActivity';
 import { InsertActivity } from '@application/InsertActivity';
 import { UpdateActivity } from '@application/UpdateActivity';
+import { DeleteActivity } from '@application/DeleteActivity';
 import { InsertExpression } from '@application/InsertExpression';
 import { DeleteExpression } from '@application/DeleteExpression';
 import GenerateMonthlyBankStatementReport from '@application/GenerateMonthlyBankStatementReport';
@@ -23,6 +24,7 @@ const getActivities: GetActivities = new GetActivities(statementDao);
 const getActivity: GetActivity = new GetActivity(statementDao);
 const insertActivity: InsertActivity = new InsertActivity(statementDao);
 const updateActivity: UpdateActivity = new UpdateActivity(statementDao);
+const deleteActivity: DeleteActivity = new DeleteActivity(statementDao);
 const insertExpression: InsertExpression = new InsertExpression(statementDao);
 const deleteExpression: DeleteExpression = new DeleteExpression(statementDao);
 const loadBankStatement: LoadBankStatement = new LoadBankStatement(statementDao);
@@ -48,6 +50,12 @@ router.post('/activity', async (req: Request, res: Response) => {
 router.put('/activity', async (req: Request, res: Response) => {
   const input: UpdateActivityRequest = req.body;
   await updateActivity.execute(input);
+  res.send();
+});
+
+router.delete('/activity/:id', async (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  await deleteActivity.execute(id);
   res.send();
 });
 
