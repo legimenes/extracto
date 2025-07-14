@@ -7,14 +7,17 @@ import { ActivityResponse } from '@shared/contracts/activity/ActivityResponse';
 import { LoadBankStatement } from '@application/LoadBankStatement';
 import { GetActivities } from '@application/GetActivities';
 import { GetActivity } from '@application/GetActivity';
+import { InsertExpression } from '@application/InsertExpression';
 import { DeleteExpression } from '@application/DeleteExpression';
 import GenerateMonthlyBankStatementReport from '@application/GenerateMonthlyBankStatementReport';
 import { MonthlyBankStatementRequest } from '@shared/contracts/monthly-bank-statement-report/MonthlyBankStatementRequest';
+import { InsertExpressionRequest } from '@shared/contracts/insertExpression/InsertExpressionRequest';
 
 const router = Router();
 const statementDao: StatementDao = new StatementDao();
 const getActivities: GetActivities = new GetActivities(statementDao);
 const getActivity: GetActivity = new GetActivity(statementDao);
+const insertExpression: InsertExpression = new InsertExpression(statementDao);
 const deleteExpression: DeleteExpression = new DeleteExpression(statementDao);
 const loadBankStatement: LoadBankStatement = new LoadBankStatement(statementDao);
 const generateMonthlyBankStatementReport: GenerateMonthlyBankStatementReport = new GenerateMonthlyBankStatementReport();
@@ -28,6 +31,12 @@ router.get('/activity/:id', async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   const activityResponse: ActivityResponse | undefined = await getActivity.execute(id);
   res.send(activityResponse);
+});
+
+router.post('/expression', async (req: Request, res: Response) => {
+  const input: InsertExpressionRequest = req.body;
+  await insertExpression.execute(input);
+  res.send();
 });
 
 router.delete('/expression/:id', async (req: Request, res: Response) => {
