@@ -1,6 +1,6 @@
 import { InsertActivityRequest } from "@shared/contracts/insert-activity/InsertActivityRequest";
-import IStatementDao from "./IStatementDao";
 import Activity from "@domain/Activity";
+import IStatementDao from "./IStatementDao";
 
 class InsertActivity {
 

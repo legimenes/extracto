@@ -8,10 +8,12 @@ import { LoadBankStatement } from '@application/LoadBankStatement';
 import { GetActivities } from '@application/GetActivities';
 import { GetActivity } from '@application/GetActivity';
 import { InsertActivity } from '@application/InsertActivity';
+import { UpdateActivity } from '@application/UpdateActivity';
 import { InsertExpression } from '@application/InsertExpression';
 import { DeleteExpression } from '@application/DeleteExpression';
 import GenerateMonthlyBankStatementReport from '@application/GenerateMonthlyBankStatementReport';
 import { InsertActivityRequest } from '@shared/contracts/insert-activity/InsertActivityRequest';
+import { UpdateActivityRequest } from '@shared/contracts/update-activity/UpdateActivityRequest';
 import { MonthlyBankStatementRequest } from '@shared/contracts/monthly-bank-statement-report/MonthlyBankStatementRequest';
 import { InsertExpressionRequest } from '@shared/contracts/insert-expression/InsertExpressionRequest';
 
@@ -20,6 +22,7 @@ const statementDao: StatementDao = new StatementDao();
 const getActivities: GetActivities = new GetActivities(statementDao);
 const getActivity: GetActivity = new GetActivity(statementDao);
 const insertActivity: InsertActivity = new InsertActivity(statementDao);
+const updateActivity: UpdateActivity = new UpdateActivity(statementDao);
 const insertExpression: InsertExpression = new InsertExpression(statementDao);
 const deleteExpression: DeleteExpression = new DeleteExpression(statementDao);
 const loadBankStatement: LoadBankStatement = new LoadBankStatement(statementDao);
@@ -39,6 +42,12 @@ router.get('/activity/:id', async (req: Request, res: Response) => {
 router.post('/activity', async (req: Request, res: Response) => {
   const input: InsertActivityRequest = req.body;
   await insertActivity.execute(input);
+  res.send();
+});
+
+router.put('/activity', async (req: Request, res: Response) => {
+  const input: UpdateActivityRequest = req.body;
+  await updateActivity.execute(input);
   res.send();
 });
 
