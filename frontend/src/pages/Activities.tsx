@@ -29,6 +29,10 @@ const Activities = () => {
     setIsActivityModalOpen(false);
   };
 
+  const handleSave = async () => {
+    await getActivities();
+  };
+
   return (
     <>
       <h1 className="border-b border-gray-200 mb-6 font-bold text-2xl">Atividades</h1>
@@ -73,7 +77,7 @@ const Activities = () => {
           </div>
         )}
       </div>
-      <ActivityModal id={selectedActivityId} open={isActivityModalOpen} onClose={handleCloseModal} />
+      <ActivityModal id={selectedActivityId} open={isActivityModalOpen} onClose={handleCloseModal} onSave={handleSave} />
     </>
   );
 }

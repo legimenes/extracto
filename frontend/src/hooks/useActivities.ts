@@ -2,6 +2,7 @@ import { useState } from 'react';
 import ActivityGateway from '@gateways/ActivityGateway';
 import { ActivityResponse as ActivityItemResponse } from '@shared/contracts/activities/ActivityResponse';
 import { ActivityResponse } from '@shared/contracts/activity/ActivityResponse';
+import { InsertActivityRequest } from '@shared/contracts/insert-activity/InsertActivityRequest';
 
 const useActivities = () => {
   const [activities, setActivities] = useState<ActivityItemResponse[]>([]);
@@ -37,10 +38,24 @@ const useActivities = () => {
     }
   };
 
+  const insertActivity = async (activity: InsertActivityRequest): Promise<void> => {
+    setIsActivitiesLoading(true);
+    try {
+      await ActivityGateway.insertActivity(activity);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to insert activity';
+      setActivitiesError(message);
+      throw error;
+    } finally {
+      setIsActivitiesLoading(false);
+    }
+  }
+
   return {
     activities,
     getActivities,
     getActivity,
+    insertActivity,
     isActivitiesLoading,
     activitiesError
   };

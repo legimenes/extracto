@@ -6,10 +6,11 @@ interface ActivityModalProps {
   id: number | null;
   open: boolean;
   onClose: () => void;
+  onSave?: () => void;
 }
 
-const ActivityModal = ({ id, open, onClose }: ActivityModalProps) => {
-  const { getActivity } = useActivities();
+const ActivityModal = ({ id, open, onClose, onSave }: ActivityModalProps) => {
+  const { getActivity, insertActivity } = useActivities();
   const [activity, setActivity] = useState<ActivityResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +36,6 @@ const ActivityModal = ({ id, open, onClose }: ActivityModalProps) => {
         setLoading(false);
       }
     };
-
     fetchActivity();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
@@ -46,6 +46,28 @@ const ActivityModal = ({ id, open, onClose }: ActivityModalProps) => {
   
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get('name') as string;
+    const operation = formData.get('operation') as string;
+    if (!name || !operation) {
+      setError('Nome e Operação são obrigatórios');
+      return;
+    }
+    setLoading(true);
+    try {
+      // if (id === null) {
+      //   await createActivity({ name, operation });
+      // } else {
+      //   await updateActivity(id, { name, operation });
+      // }
+      await insertActivity({ name, operation });
+      onSave?.();
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Falha ao salvar atividade');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -85,22 +107,22 @@ const ActivityModal = ({ id, open, onClose }: ActivityModalProps) => {
                 <option value="D">Débito</option>
               </select>
             </div>
+            <div className="flex justify-end space-x-2 mt-4">
+              <button
+                className="px-3 py-1 text-sm text-white font-semibold rounded bg-neutral-600 hover:bg-neutral-700"
+                onClick={onClose}
+                disabled={loading}>
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="px-3 py-1 text-sm text-white font-semibold rounded bg-lime-600 hover:bg-lime-700"
+                disabled={loading}>
+                Salvar
+              </button>
+            </div>
           </form>
         )}
-        <div className="flex justify-end space-x-2 mt-4">
-          <button
-            className="px-3 py-1 text-sm text-white font-semibold rounded bg-neutral-600 hover:bg-neutral-700"
-            onClick={onClose}
-            disabled={loading}>
-            Cancelar
-          </button>
-          <button
-            className="px-3 py-1 text-sm text-white font-semibold rounded bg-lime-600 hover:bg-lime-700"
-            //onClick={handleSave}
-            disabled={loading}>
-            Salvar
-          </button>
-        </div>
       </div>
     </div>
   );

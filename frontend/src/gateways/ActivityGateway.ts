@@ -1,10 +1,12 @@
 import axios from "axios";
 import { ActivityResponse as ActivityItemResponse } from '@shared/contracts/activities/ActivityResponse';
 import { ActivityResponse  } from '@shared/contracts/activity/ActivityResponse';
+import { InsertActivityRequest } from '@shared/contracts/insert-activity/InsertActivityRequest';
 
 export interface IActivityGateway {
 	getActivities(): Promise<ActivityItemResponse[]>;
-  getActivity(id: number): Promise<ActivityResponse | undefined>
+  getActivity(id: number): Promise<ActivityResponse | undefined>;
+  insertActivity(activity: InsertActivityRequest): Promise<void>;
 }
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -30,6 +32,16 @@ const ActivityGateway: IActivityGateway = {
     } catch (error) {
       console.error('Error fetching activity:', error);
       throw new Error('Failed to fetch activity');
+    }
+  },
+
+  insertActivity: async (activity: InsertActivityRequest): Promise<void> => {
+    try {
+      const url = `${BASE_URL}activity`;
+      await axios.post(url, activity);
+    } catch (error) {
+      console.error('Error inserting activity:', error);
+      throw new Error('Failed to insert activity');
     }
   }
 
