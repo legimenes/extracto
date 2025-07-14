@@ -2,8 +2,6 @@
 
 ## TO-DOs
 Frontend: Extract export button to a component  
-Frontend: Create pages  
-Frontend: Create menu sidebar  
 Frontend: Back <StrictMode>  
 
 ## Backend setup
