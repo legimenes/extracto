@@ -10,7 +10,7 @@ interface ActivityModalProps {
 }
 
 const ActivityModal = ({ id, open, onClose, onSave }: ActivityModalProps) => {
-  const { getActivity, insertActivity, updateActivity } = useActivities();
+  const { getActivity, insertActivity, updateActivity, deleteActivity } = useActivities();
   const [activity, setActivity] = useState<ActivityResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,6 +43,22 @@ const ActivityModal = ({ id, open, onClose, onSave }: ActivityModalProps) => {
   if (!open) {
     return null;
   }
+
+  const handleDelete = async () => {
+    if (id === null) return;
+    const confirmed = window.confirm('Confirma a exclusão desta atividade e todas as suas expressões?');
+    if (!confirmed) return;
+    setLoading(true);
+    try {
+      await deleteActivity(id);
+      onSave?.();
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Falha ao excluir atividade');
+    } finally {
+      setLoading(false);
+    }
+  };
   
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -113,6 +129,16 @@ const ActivityModal = ({ id, open, onClose, onSave }: ActivityModalProps) => {
                 disabled={loading}>
                 Cancelar
               </button>
+              {id !== null && (
+                <button
+                  type="button"
+                  className="px-3 py-1 text-sm text-white font-semibold rounded bg-red-600 hover:bg-red-700"
+                  onClick={handleDelete}
+                  disabled={loading}
+                >
+                  Excluir
+                </button>
+              )}
               <button
                 type="submit"
                 className="px-3 py-1 text-sm text-white font-semibold rounded bg-lime-600 hover:bg-lime-700"

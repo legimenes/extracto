@@ -65,12 +65,26 @@ const useActivities = () => {
     }
   };
 
+  const deleteActivity = async (id: number): Promise<void> => {
+    setIsActivitiesLoading(true);
+    try {
+      await ActivityGateway.deleteActivity(id);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to delete activity';
+      setActivitiesError(message);
+      throw error;
+    } finally {
+      setIsActivitiesLoading(false);
+    }
+  };
+
   return {
     activities,
     getActivities,
     getActivity,
     insertActivity,
     updateActivity,
+    deleteActivity,
     isActivitiesLoading,
     activitiesError
   };

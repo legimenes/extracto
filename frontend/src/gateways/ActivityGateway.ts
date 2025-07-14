@@ -9,6 +9,7 @@ export interface IActivityGateway {
   getActivity(id: number): Promise<ActivityResponse | undefined>;
   insertActivity(activity: InsertActivityRequest): Promise<void>;
   updateActivity(id: number,activity: UpdateActivityRequest): Promise<void>;
+  deleteActivity(id: number): Promise<void>;
 }
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -51,6 +52,16 @@ const ActivityGateway: IActivityGateway = {
     try {
       const url = `${BASE_URL}activity/${id}`;
       await axios.put(url, activity);
+    } catch (error) {
+      console.error('Error updating activity:', error);
+      throw new Error('Failed to update activity');
+    }
+  },
+
+  deleteActivity: async (id: number): Promise<void> => {
+    try {
+      const url = `${BASE_URL}activity/${id}`;
+      await axios.delete(url);
     } catch (error) {
       console.error('Error updating activity:', error);
       throw new Error('Failed to update activity');
