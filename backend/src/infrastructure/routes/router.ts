@@ -47,9 +47,10 @@ router.post('/activity', async (req: Request, res: Response) => {
   res.send();
 });
 
-router.put('/activity', async (req: Request, res: Response) => {
+router.put('/activity/:id', async (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
   const input: UpdateActivityRequest = req.body;
-  await updateActivity.execute(input);
+  await updateActivity.execute(id, input);
   res.send();
 });
 

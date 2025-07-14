@@ -3,6 +3,7 @@ import ActivityGateway from '@gateways/ActivityGateway';
 import { ActivityResponse as ActivityItemResponse } from '@shared/contracts/activities/ActivityResponse';
 import { ActivityResponse } from '@shared/contracts/activity/ActivityResponse';
 import { InsertActivityRequest } from '@shared/contracts/insert-activity/InsertActivityRequest';
+import { UpdateActivityRequest } from '@shared/contracts/update-activity/UpdateActivityRequest';
 
 const useActivities = () => {
   const [activities, setActivities] = useState<ActivityItemResponse[]>([]);
@@ -49,13 +50,27 @@ const useActivities = () => {
     } finally {
       setIsActivitiesLoading(false);
     }
-  }
+  };
+
+  const updateActivity = async (id: number, activity: UpdateActivityRequest): Promise<void> => {
+    setIsActivitiesLoading(true);
+    try {
+      await ActivityGateway.updateActivity(id, activity);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to update activity';
+      setActivitiesError(message);
+      throw error;
+    } finally {
+      setIsActivitiesLoading(false);
+    }
+  };
 
   return {
     activities,
     getActivities,
     getActivity,
     insertActivity,
+    updateActivity,
     isActivitiesLoading,
     activitiesError
   };

@@ -10,7 +10,7 @@ interface ActivityModalProps {
 }
 
 const ActivityModal = ({ id, open, onClose, onSave }: ActivityModalProps) => {
-  const { getActivity, insertActivity } = useActivities();
+  const { getActivity, insertActivity, updateActivity } = useActivities();
   const [activity, setActivity] = useState<ActivityResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,12 +55,11 @@ const ActivityModal = ({ id, open, onClose, onSave }: ActivityModalProps) => {
     }
     setLoading(true);
     try {
-      // if (id === null) {
-      //   await createActivity({ name, operation });
-      // } else {
-      //   await updateActivity(id, { name, operation });
-      // }
-      await insertActivity({ name, operation });
+      if (id === null) {
+        await insertActivity({ name, operation });
+      } else {
+        await updateActivity(id, { name, operation });
+      }
       onSave?.();
       onClose();
     } catch (err) {

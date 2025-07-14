@@ -7,8 +7,8 @@ class UpdateActivity {
   constructor(readonly statementDao: IStatementDao) {
   }
 
-  async execute(request: UpdateActivityRequest) {
-    const activity: Activity = new Activity(request.id, request.name, request.operation);
+  async execute(id: number, request: UpdateActivityRequest) {
+    const activity: Activity = new Activity(id, request.name, request.operation);
     await this.statementDao.updateActivity(activity);
   }
 }
