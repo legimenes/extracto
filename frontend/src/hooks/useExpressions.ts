@@ -19,8 +19,22 @@ const useExpressions = () => {
     }
   };
 
+  const deleteExpression = async (id: number): Promise<void> => {
+    setIsExpressionsLoading(true);
+    try {
+      await ExpressionGateway.deleteExpression(id);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to delete expression';
+      setExpressionsError(message);
+      throw error;
+    } finally {
+      setIsExpressionsLoading(false);
+    }
+  };
+
   return {
     insertExpression,
+    deleteExpression,
     isExpressionsLoading,
     expressionsError
   };
