@@ -7,6 +7,7 @@ const useExpressions = () => {
   const [expressionsError, setExpressionsError] = useState<string | null>(null);
 
   const insertExpression = async (expression: InsertExpressionRequest): Promise<void> => {
+    setExpressionsError(null);
     setIsExpressionsLoading(true);
     try {
       await ExpressionGateway.insertExpression(expression);
@@ -20,6 +21,7 @@ const useExpressions = () => {
   };
 
   const deleteExpression = async (id: number): Promise<void> => {
+    setExpressionsError(null);
     setIsExpressionsLoading(true);
     try {
       await ExpressionGateway.deleteExpression(id);

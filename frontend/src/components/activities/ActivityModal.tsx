@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import useActivities from "@/hooks/useActivities";
-import useExpressions from "@/hooks/useExpressions";
+import Loading from "@/components/shared/Loading";
 import { ActivityResponse } from "@shared/contracts/activity/ActivityResponse";
-import { ExpressionModal } from "./ExpressionModal";
+import { ExpressionList } from "./ExpressionsList";
 
 interface ActivityModalProps {
   id: number | null;
@@ -12,12 +12,9 @@ interface ActivityModalProps {
 };
 
 const ActivityModal = ({ id, open, onClose, onSave }: ActivityModalProps) => {
-  const { getActivity, insertActivity, updateActivity, deleteActivity } = useActivities();
-  const { deleteExpression } = useExpressions();
+  const { getActivity, insertActivity, updateActivity, deleteActivity, isActivitiesLoading, activitiesError } = useActivities();
   const [activity, setActivity] = useState<ActivityResponse | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isExpressionModalOpen, setIsExpressionModalOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -30,15 +27,8 @@ const ActivityModal = ({ id, open, onClose, onSave }: ActivityModalProps) => {
       return;
     }
     const fetchActivity = async () => {
-      setLoading(true);
-      try {
-        const data = await getActivity(id);
-        setActivity(data || null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Falha ao carregar atividade');
-      } finally {
-        setLoading(false);
-      }
+      const data = await getActivity(id);
+      setActivity(data || null);
     };
     fetchActivity();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -52,16 +42,9 @@ const ActivityModal = ({ id, open, onClose, onSave }: ActivityModalProps) => {
     if (id === null) return;
     const confirmed = window.confirm('Confirma a exclusão desta atividade e todas as suas expressões?');
     if (!confirmed) return;
-    setLoading(true);
-    try {
-      await deleteActivity(id);
-      onSave?.();
-      onClose();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Falha ao excluir atividade');
-    } finally {
-      setLoading(false);
-    }
+    await deleteActivity(id);
+    onSave?.();
+    onClose();
   };
 
   const handleCancel = () => {
@@ -81,46 +64,14 @@ const ActivityModal = ({ id, open, onClose, onSave }: ActivityModalProps) => {
       setError('Nome e Operação são obrigatórios');
       return;
     }
-    setLoading(true);
-    try {
-      if (id === null) {
-        await insertActivity({ name, operation });
-      } else {
-        await updateActivity(id, { name, operation });
-      }
-      onSave?.();
-      onClose();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Falha ao salvar atividade');
-    } finally {
-      setLoading(false);
+    if (id === null) {
+      await insertActivity({ name, operation });
+    } else {
+      await updateActivity(id, { name, operation });
     }
+    onSave?.();
+    onClose();
   }
-
-  const handleDeleteExpression = async (expressionId: number) => {
-    const confirmed = window.confirm('Confirma a exclusão desta expressão?');
-    if (!confirmed) return;
-    setLoading(true);
-    try {
-      await deleteExpression(expressionId);
-      if (id !== null) {
-        const data = await getActivity(id);
-        setActivity(data || null);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Falha ao excluir expressão');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleOpenExpressionModal = () => {
-    setIsExpressionModalOpen(true);
-  };
-
-  const handleCloseExpressionModal = () => {
-    setIsExpressionModalOpen(false);
-  };
 
   const handleExpressionRefresh = async () => {
     if (id !== null) {
@@ -134,9 +85,10 @@ const ActivityModal = ({ id, open, onClose, onSave }: ActivityModalProps) => {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-neutral-800 p-6 rounded-lg shadow-lg max-w-md w-full">
           <h2 className="text-xl font-bold text-white mb-4">{id === null ? 'Nova Atividade' : 'Editar Atividade'}</h2>
-          {loading && <p className="text-neutral-300">Carregando...</p>}
+          <Loading isLoading={isActivitiesLoading} />
+          {activitiesError && <p className="text-red-500">{activitiesError}</p>}
           {error && <p className="text-red-500">{error}</p>}
-          {!loading && (
+          {!isActivitiesLoading && (
             <>
               <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
                 <div>
@@ -173,7 +125,7 @@ const ActivityModal = ({ id, open, onClose, onSave }: ActivityModalProps) => {
                     type="button"
                     className="px-3 py-1 text-sm text-white font-semibold rounded bg-neutral-600 hover:bg-neutral-700"
                     onClick={handleCancel}
-                    disabled={loading}>
+                    disabled={isActivitiesLoading}>
                     Cancelar
                   </button>
                   {id !== null && (
@@ -181,7 +133,7 @@ const ActivityModal = ({ id, open, onClose, onSave }: ActivityModalProps) => {
                       type="button"
                       className="px-3 py-1 text-sm text-white font-semibold rounded bg-red-600 hover:bg-red-700"
                       onClick={handleDelete}
-                      disabled={loading}
+                      disabled={isActivitiesLoading}
                     >
                       Excluir
                     </button>
@@ -189,66 +141,22 @@ const ActivityModal = ({ id, open, onClose, onSave }: ActivityModalProps) => {
                   <button
                     type="submit"
                     className="px-3 py-1 text-sm text-white font-semibold rounded bg-lime-600 hover:bg-lime-700"
-                    disabled={loading}>
+                    disabled={isActivitiesLoading}>
                     Salvar
                   </button>
                 </div>
               </form>
-              {id !== null && (
-                <div className="mt-6">
-                  {activity?.expressions && activity.expressions.length > 0 ? (
-                    <div className="overflow-auto max-h-48">
-                      <table className="min-w-full bg-neutral-900 border-collapse border border-neutral-700 select-none">
-                        <thead className="sticky top-0">
-                          <tr className="bg-neutral-900 text-neutral-400">
-                            <th className="pl-2 text-start cursor-pointer">
-                              <button
-                                className="px-3 py-1 text-sm text-white font-semibold rounded bg-lime-600 hover:bg-lime-700"
-                                onClick={handleOpenExpressionModal}
-                                disabled={loading}>
-                                +
-                              </button>
-                              &nbsp;Expressão
-                            </th>
-                            <th></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {activity.expressions.map((expression) => (
-                            <tr
-                              key={expression.id}
-                              className="border border-neutral-700 hover:bg-neutral-800">
-                              <td className="p-2">{expression.pattern}</td>
-                              <td className="p-2 text-right">
-                                <button
-                                  className="px-2 py-1 text-xs text-white font-semibold rounded bg-red-600 hover:bg-red-700"
-                                  onClick={() => handleDeleteExpression(expression.id)}
-                                  disabled={loading}>
-                                  X
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  ) : (
-                    <p className="text-neutral-300">Nenhuma expressão associada</p>
-                  )}
-                </div>
-              )}
+              {id !== null && activity && (
+                <ExpressionList
+                  activityId={id}
+                  expressions={activity.expressions}
+                  onRefresh={handleExpressionRefresh}
+                />
+              )}              
             </>
           )}
         </div>
       </div>
-      {id !== null && (
-        <ExpressionModal
-          activityId={id}
-          open={isExpressionModalOpen}
-          onClose={handleCloseExpressionModal}
-          onRefresh={handleExpressionRefresh}
-        />
-      )}
     </>
   );
 };

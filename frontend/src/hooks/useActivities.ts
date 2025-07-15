@@ -11,6 +11,7 @@ const useActivities = () => {
   const [activitiesError, setActivitiesError] = useState<string | null>(null);
 
   const getActivities = async (): Promise<ActivityItemResponse[]> => {
+    setActivitiesError(null);
     setIsActivitiesLoading(true);
     try {
       const data: ActivityItemResponse[] = await ActivityGateway.getActivities();
@@ -26,6 +27,7 @@ const useActivities = () => {
   };
 
   const getActivity = async (id: number): Promise<ActivityResponse | undefined> => {
+    setActivitiesError(null);
     setIsActivitiesLoading(true);
     try {
       const data: ActivityResponse | undefined = await ActivityGateway.getActivity(id);
@@ -40,6 +42,7 @@ const useActivities = () => {
   };
 
   const insertActivity = async (activity: InsertActivityRequest): Promise<void> => {
+    setActivitiesError(null);
     setIsActivitiesLoading(true);
     try {
       await ActivityGateway.insertActivity(activity);
@@ -53,6 +56,7 @@ const useActivities = () => {
   };
 
   const updateActivity = async (id: number, activity: UpdateActivityRequest): Promise<void> => {
+    setActivitiesError(null);
     setIsActivitiesLoading(true);
     try {
       await ActivityGateway.updateActivity(id, activity);
@@ -66,6 +70,7 @@ const useActivities = () => {
   };
 
   const deleteActivity = async (id: number): Promise<void> => {
+    setActivitiesError(null);
     setIsActivitiesLoading(true);
     try {
       await ActivityGateway.deleteActivity(id);
