@@ -1,3 +1,5 @@
+import Expression from "./Expression";
+
 export default class Activity {
   constructor(
     readonly id: number,
@@ -5,8 +7,10 @@ export default class Activity {
     readonly operation: string
   ) {
     this.patterns = [];
+    this.expressions = [];
   }
   private patterns: string[];
+  private expressions: Expression[];
 
   static create(
     name: string,
@@ -21,5 +25,13 @@ export default class Activity {
   
   public getPatterns(): string[] {
     return this.patterns;
+  }
+
+  public addExpression(expression: Expression): void {
+    this.expressions.push(expression);
+  }
+
+  public getExpressions(): Expression[] {
+    return this.expressions;
   }
 }

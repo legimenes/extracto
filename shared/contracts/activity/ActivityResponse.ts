@@ -2,9 +2,15 @@ interface ActivityResponse {
   id: number;
   name: string;
   operation: string;
-  patterns: string[];
+  expressions: ExpressionResponse[];  
 };
 
+interface ExpressionResponse {
+  id: number;
+  pattern: string;
+}
+
 export { 
-  ActivityResponse
+  ActivityResponse,
+  ExpressionResponse
 };

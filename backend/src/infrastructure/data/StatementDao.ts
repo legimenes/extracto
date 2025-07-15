@@ -39,6 +39,7 @@ export default class StatementDao implements IStatementDao {
         Activities.Id,
         Activities.Name,
         ActivityTypes.Operation,
+        Expressions.Id AS 'ExpressionId',
         Expressions.Pattern
       FROM Activities
       INNER JOIN ActivityTypes ON ActivityTypes.Id = Activities.ActivityTypeId
@@ -55,8 +56,8 @@ export default class StatementDao implements IStatementDao {
     const { Id, Name, Operation } = rows[0];
     const activity = new Activity(Id, Name, Operation);
     for (const row of rows) {
-      if (row.Pattern) {
-        activity.addPattern(row.Pattern);
+      if (row.ExpressionId) {
+        activity.addExpression(new Expression(row.ExpressionId, Id, row.Pattern));
       }
     }
     return activity;

@@ -65,7 +65,7 @@ const Activities = () => {
                       id: activity.id,
                       name: activity.name,
                       operation: activity.operation,
-                      patterns: []
+                      expressions: []
                     })}>
                       <td className="p-2">{activity.id}</td>
                       <td className="p-2">{activity.name}</td>

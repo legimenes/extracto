@@ -15,7 +15,10 @@ class GetActivity {
       id: activity.id,
       name: activity.name,
       operation: activity.operation,
-      patterns: activity.getPatterns()
+      expressions: activity.getExpressions().map(expression => ({
+        id: expression.id,
+        pattern: expression.pattern
+      }))
     };
     return activityResponse;
   }
