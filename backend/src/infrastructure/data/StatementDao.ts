@@ -16,6 +16,7 @@ export default class StatementDao implements IStatementDao {
       FROM Activities
       INNER JOIN ActivityTypes ON ActivityTypes.Id = Activities.ActivityTypeId
       LEFT JOIN Expressions ON Expressions.ActivityId = Activities.Id
+      ORDER BY Activities.Name
       `.replace(/\s+/g, " ").trim();
     const rows = await db.all(query);
     const activityMap = new Map<number, Activity>();

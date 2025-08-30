@@ -69,7 +69,14 @@ const ExpressionList = ({ activityId, expressions, onRefresh }: ExpressionListPr
             </table>
           </div>
         ) : (
-          <p className="text-neutral-300">Nenhuma expressão associada</p>
+          <div>
+            <button
+              className="px-3 py-1 text-sm text-white font-semibold rounded bg-lime-600 hover:bg-lime-700"
+              onClick={handleOpenExpressionModal}>
+              +
+            </button>
+            <p className="text-neutral-300">Nenhuma expressão associada</p>
+          </div>
         )}
       </div>
       {activityId !== null && (
